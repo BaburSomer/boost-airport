@@ -21,4 +21,9 @@ public class Firetruck extends LandVehicle {
 	public double getWaterCapacity() {
 		return this.waterCapacity;
 	}
+
+	@Override
+	public int compareTo(Vehicle o) {
+		return this.getName().compareToIgnoreCase(o.getName());
+	}
 }

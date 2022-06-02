@@ -41,4 +41,14 @@ public class Airplane extends AirVehicle {
 	public double getMaxWeight() {
 		return this.maxWeight;
 	}
+
+	@Override
+	/**
+	 * Compares two airplanes by their wing length
+	 */
+	public int compareTo(Vehicle o) {
+		Airplane other = (Airplane)o;
+		return Integer.compare(this.wingLength, other.wingLength);
+	}
 }
+

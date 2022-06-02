@@ -1,0 +1,18 @@
+﻿VehicleType;Brand;Name;Color;Engine;Speed;Company;Capacity;Length;Weight;MaxWeight;Service;ServiceType
+HELI;Bell;Heli 01;Black;Gasoline;150;;;;;;;
+HELI;EuroCopter;Heli 02;Red;Gasoline;160;;;;;;;
+HELI;Robinson;Heli 03;Blue;Gasoline;100;;;;;;;
+AIRPLANE;Boing;Airplane 01;Green;Gasoline;800;THY;230;30;2000;5000;;
+AIRPLANE;Airbus;Airplane 02;Grey;Gasoline;900;Anadolo Jet;230;40;2200;5100;;
+AIRPLANE;Lockheed;Airplane 03;Black;Gasoline;950;Pegasus;230;50;2400;5200;;
+AIRPLANE;Boing;Airplane 04;Red;Gasoline;800;THY;230;60;2600;5300;;
+AIRPLANE;Airbus;Airplane 05;Blue;Gasoline;900;Anadolo Jet;230;30;2800;5400;;
+AIRPLANE;Lockheed;Airplane 06;Green;Gasoline;950;Pegasus;230;40;3000;5500;;
+AIRPLANE;Airbus;Airplane 07;Grey;Gasoline;1000;Pegasus;231;50;3200;5600;;
+FIRE;Tofaş;Fire 01;Red;Benzin;50;;1500;;;;no;
+FİRE;Mercedes;Fire 02;Red;Benzin;50;;2000;;;;no;
+FİRE;Mercedes;Fire 03;Red;Benzin;50;;1750;;;;no;
+SERVICE;Tofaş;Service 01;Green;Diesel;30;;;;;;no;Catering
+SERVICE;Renault;Service 02;Grey;Diesel;30;;;;;;no;Transport
+SERVICE;Tofaş;Service 03;Green;Diesel;30;;;;;;no;Cleaning
+SERVICE;Renault;Service 04;Blue;Diesel;30;;;;;;no;Catering

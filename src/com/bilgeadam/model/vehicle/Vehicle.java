@@ -1,6 +1,6 @@
 package com.bilgeadam.model.vehicle;
 
-public abstract class Vehicle {
+public abstract class Vehicle implements Comparable<Vehicle> {
 	private String brand;
 	private String name;
 	private String color;
@@ -49,5 +49,25 @@ public abstract class Vehicle {
 		return "Vehicle [brand=" + this.brand + ", name=" + this.name + ", color=" + this.color + ", engineType="
 				+ this.engineType + ", maxSpeed=" + this.maxSpeed + "]";
 	}
-	
+
+	/**
+	 * This method accepts a string consisting of the definition of a vehicle data. Depending on the 
+	 * type it creates a corresponding object.
+	 * @param line	The line to be parsed
+	 * @return		A concrete object of type Vehicle (Airplane, Helicopter, FireTruck, ServiceCar
+	 * @throws UnrecognizedVehicleException	If line starts with an unexpected value listed below
+	 */
+	public static Vehicle parse(String line) throws UnrecognizedVehicleException {
+		if (line.toUpperCase().startsWith("HEL"))
+			return null;
+		if (line.toUpperCase().startsWith("AIR"))
+			return null;
+		if (line.toUpperCase().startsWith("FIR"))
+			return null;
+		if (line.toUpperCase().startsWith("SER"))
+			return null;
+		else {
+			throw new UnrecognizedVehicleException(line);
+		}
+	}
 }

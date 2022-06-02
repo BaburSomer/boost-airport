@@ -20,4 +20,9 @@ public class ServiceCar extends LandVehicle {
 	public boolean isOnDuty() {
 		return this.onDuty;
 	}
+
+	@Override
+	public int compareTo(Vehicle o) {
+		return this.serviceType.compareTo(((ServiceCar)o).serviceType);
+	}
 }

@@ -6,4 +6,8 @@ public class Helicopter extends AirVehicle {
 		super(brand, engineType);
 	}
 
+	@Override
+	public int compareTo(Vehicle o) {
+		return this.getBrand().compareTo(o.getBrand());
+	}
 }
