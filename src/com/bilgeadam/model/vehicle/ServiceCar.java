@@ -1,6 +1,9 @@
 package com.bilgeadam.model.vehicle;
 
-public class ServiceCar extends LandVehicle {
+import java.io.Serializable;
+
+public class ServiceCar extends LandVehicle implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String serviceType; // catering, çekici araç, temizlik aracı
 	private boolean onDuty;
 

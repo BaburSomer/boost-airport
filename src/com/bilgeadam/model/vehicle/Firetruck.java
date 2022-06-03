@@ -1,6 +1,9 @@
 package com.bilgeadam.model.vehicle;
 
-public class Firetruck extends LandVehicle {
+import java.io.Serializable;
+
+public class Firetruck extends LandVehicle implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private double  waterCapacity;
 	private boolean onDuty;
 

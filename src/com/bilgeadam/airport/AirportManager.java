@@ -2,12 +2,17 @@ package com.bilgeadam.airport;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.bilgeadam.airport.commons.ApplicationLogger;
 import com.bilgeadam.model.airport.Airport;
 import com.bilgeadam.model.vehicle.Airplane;
 import com.bilgeadam.model.vehicle.Helicopter;
@@ -21,27 +26,104 @@ public class AirportManager {
 	public AirportManager() {
 		super();
 		this.vehicles = new ArrayList<>();
+		ApplicationLogger.info("Airport nesnesi oluşturuldu");
 	}
 
 	public static void main(String[] args) {
 		System.out.println("Havaalanı Yönetim Uygulaması");
 
 		AirportManager manager = new AirportManager();
+		
 		manager.airport = new Airport("İstanbul Airport", "İstanbul");
-		// manager.registerVehicles();
+//		manager.registerVehicles();
 		manager.readVehicleData();
 		System.out.println(manager);
 
 		System.out.println("Havaalanı Yönetim Uygulamasını kullandığınız için teşekkürler");
 	}
 
+	/**
+	 * Araç bilgilerini okuma kısmı. Ya oluşturulmuş binary-verilerden okunuyor (deseriyalize ediliyor) ya da bir metin dosyasından okunup
+	 * parse edilip yorumlanıyor. Gerekli nesneler üretiliyor ve okuma işlemi bittikten sonra binary-dosya içine 
+	 * bir daha bu masraflı metin okuma işi yapılmasın diye yazılıyor (seriyalize ediliyor)
+	 */
 	private void readVehicleData() {
-		final String source = "C:\\Users\\babur.somer\\boost-02-workspace\\Airport\\data\\vehicles.csv";
-		File         file   = new File(source);
+
+		final String sourcePath = "C:\\Users\\babur.somer\\boost-02-workspace\\Airport\\data";  // dosyaların olması gereken dizin
+		final String CSVFile    = "vehicles.csv";  // metin dosya adı
+		final String DATFile    = "vehicles.dat";	// binary-dosya adı
+
+		File datFile = new File(sourcePath, DATFile);
+		if (datFile.exists()) {
+			this.deserialize(datFile);
+		}
+		else {
+			this.parseCSVFile(sourcePath, CSVFile);
+			this.serializeVehicleData(datFile);
+		}
+	}
+
+	private void serializeVehicleData(File datFile) {
+		/* 
+		 * Bir binary dosyaya yazmak için öncelikle binary verileri yazabilecek bir mekanizmaya ihtiyaç var. Bu mekanizma 
+		 * Stream'lerle çalışıyor. Bir dosyaya yazdığımız için FileOutputStream oluşturmamız gerekli. Bunu yaparken kullanacağımız dosya
+		 * bilgilerini veriyoruz. Sonra verileri Object olarakyazdığımızdan bu FileOutputStream'i bir ObjectouputStream ile sarmallıyoruz.
+		 * Bu şekilde  verileri serileştirilmiş şekilde dosyaya yazabiliyoruz
+		 */
+
+		try (FileOutputStream   fos = new FileOutputStream(datFile);
+			 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+			oos.writeObject(this.vehicles);
+			oos.flush();
+			ApplicationLogger.info("Nesne yazıldı");
+		}
+		catch (IOException ex) {
+			ApplicationLogger.error("Hata: " + ex.getMessage());
+			ex.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void deserialize(File datFile) {
+		/* 
+		 * Bir binary dosya okumak için öncelikle binary verileri okuyabilecek mekanizmaya ihtiyaç var. Bu mekanizma 
+		 * Stream'lerle çalışıyor. Bir dosyadan okuduğumuz için FileInputStream oluşturmamız gerekli. Bunu yaparken kullanacağımız dosya
+		 * bilgilerini veriyoruz. Sonra verileri Object olarak okuduğumuzdan bu FileInputStream'i bir ObjectInputStream ile sarmallıyoruz.
+		 * Bu şekilde serileştirilmiş verileri tekrar nesne şeklinde okuyabiliyoruz 
+		 */
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(datFile))) {
+
+			Object o = ois.readObject();
+
+			this.vehicles = (ArrayList<Vehicle>) o;
+
+			ApplicationLogger.info("Obje hali: " + o);
+		}
+		catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		catch (ClassNotFoundException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	/*
+	 * Metin dosyasının her bir satırını okuyarak yorumlayıp pars etmemiz gerekiyor
+	 */
+	private void parseCSVFile(String sourcePath, String CSVFile) {
+		File file = new File(sourcePath, CSVFile);
 		if (!file.exists()) {
-			System.err.println("Eksik kaynak. Program çalışmaya devam edemez. Bye...");
+			ApplicationLogger.error("Eksik kaynak. Program çalışmaya devam edemez. Bye...");
+			System.exit(-10);
 		}
 
+		/*
+		 * Bir metin dosyası okuduğumuzdan File reader şeklinde bir yapı kullanmamız gerekli. Buna okumak istediğimiz dosya bilgilerini 
+		 * parametre olarak veriyoruz. Okuma işlemni hızlandırıp optimize etmek için BufferedReader kullanıyoruz
+		 */
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
 			while (true) {
 				String line = reader.readLine();
@@ -50,16 +132,19 @@ public class AirportManager {
 				}
 				else {
 					System.out.println("==> " + line);
-					if (line.startsWith("﻿VehicleType")) {
+					if (line.startsWith("﻿VehicleType")) {  // ilk satır başlık bilgisi içerdiği için atla
 						continue;
 					}
 					try {
-						Vehicle vehicle = Vehicle.parse(line);  // dosyadan her okunan satırı yorumlayıp doğru türden bir obje 
-																// yaratmamız gerekiyor. Vehicle.parse(line) yorumlama ve obje 
+						Vehicle vehicle = Vehicle.parse(line); // dosyadan her okunan satırı yorumlayıp doğru türden bir
+																// obje
+																// yaratmamız gerekiyor. Vehicle.parse(line) yorumlama
+																// ve obje
 																// yaratma işini yapacak
+						vehicles.add(vehicle);
 					}
 					catch (UnrecognizedVehicleException ex) {
-						System.err.println("Tanımsız araç: " + ex.getMessage());
+						ApplicationLogger.warning("Tanımsız araç: " + ex.getMessage());
 						continue;
 					}
 				}
@@ -73,6 +158,12 @@ public class AirportManager {
 		}
 	}
 
+	/**
+	 * ÖDEV: bu yöntemi doğru çalışır şekle sokup istenirse dosyadan okunan verilere eklemeler
+	 * yapmayı imkanlı kılın. Bu yöntem ile oluşturulan her aracı da serialize edin
+	 * 
+	 * TÜYO: vehicles'ı her serialize ettiğinizde tüm vehicle'lar dosyaya yazılır eski bilgiler ezilir 
+	 */
 	private void registerVehicles() {
 		System.out.println("Lütfen araç bilgilerini giriniz");
 		System.out.println("===============================\n");

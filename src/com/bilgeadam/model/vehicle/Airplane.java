@@ -1,6 +1,9 @@
 package com.bilgeadam.model.vehicle;
 
-public class Airplane extends AirVehicle {
+import java.io.Serializable;
+
+public class Airplane extends AirVehicle implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private String company;
 	private int    passengerCapacity;
 	private int    wingLength;
